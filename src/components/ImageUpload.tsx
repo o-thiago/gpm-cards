@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { ImageIcon, Upload, X } from "lucide-react";
+import Image from "next/image";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Upload, X, ImageIcon } from "lucide-react";
-import Image from "next/image";
 
 interface ImageUploadProps {
 	value: string;
@@ -64,13 +64,13 @@ export function ImageUpload({
 		e.stopPropagation();
 		setDragActive(false);
 
-		if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+		if (e.dataTransfer.files?.item(0)) {
 			handleFileChange(e.dataTransfer.files[0]);
 		}
 	};
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files && e.target.files[0]) {
+		if (e.target.files?.item(0)) {
 			handleFileChange(e.target.files[0]);
 		}
 	};
@@ -112,7 +112,8 @@ export function ImageUpload({
 					</Button>
 				</div>
 			) : (
-				<div
+				<button
+					type="button"
 					className={`relative border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
 						dragActive
 							? "border-indigo-500 bg-indigo-50"
@@ -134,7 +135,7 @@ export function ImageUpload({
 						</div>
 						<div className="text-xs text-gray-500">PNG, JPG, GIF até 5MB</div>
 					</div>
-				</div>
+				</button>
 			)}
 
 			<input

@@ -2,11 +2,9 @@
 
 import type React from "react";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import type { CardData, CardFormData } from "@/components/ui/card";
 import {
 	Dialog,
 	DialogContent,
@@ -14,8 +12,10 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "./ImageUpload";
-import type { CardData, CardFormData } from "@/components/ui/card";
 
 interface CardFormProps {
 	isOpen: boolean;
@@ -46,7 +46,7 @@ export function CardForm({
 		} else {
 			setFormData({ title: "", description: "", image: "" });
 		}
-	}, [editingCard, isOpen]);
+	}, [editingCard]);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();

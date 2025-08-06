@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Play, Pause } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import type { CardData } from "@/components/ui/card";
 
 interface SlideshowProps {
@@ -53,7 +53,6 @@ export function Slideshow({ cards }: SlideshowProps) {
 	return (
 		<section
 			className="relative bg-white shadow-lg mb-8"
-			role="region"
 			aria-label="Slideshow de cards"
 		>
 			<div className="relative h-96 overflow-hidden">
@@ -142,9 +141,10 @@ export function Slideshow({ cards }: SlideshowProps) {
 					)}
 				</Button>
 				<div className="flex space-x-2">
-					{cards.map((_, index) => (
+					{cards.map((card, index) => (
 						<button
-							key={index}
+							type="submit"
+							key={card.id}
 							onClick={() => goToSlide(index)}
 							className={`w-3 h-3 rounded-full transition-colors ${
 								index === currentSlide ? "bg-white" : "bg-white/50"

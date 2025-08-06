@@ -19,6 +19,7 @@
           devShells.default = mkShell {
             packages = [
               nodejs
+              biome
             ];
           };
         };

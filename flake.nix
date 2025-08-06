@@ -19,7 +19,6 @@
           devShells.default = mkShell {
             packages = [
               nodejs
-              vite
             ];
           };
         };

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Play, Pause } from "lucide-react"
+import { ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react'
 import Image from "next/image"
 import type { CardData } from "@/components/ui/card"
 
@@ -53,32 +53,47 @@ export function Slideshow({ cards }: SlideshowProps) {
   return (
     <section className="relative bg-white shadow-lg mb-8" role="region" aria-label="Slideshow de cards">
       <div className="relative h-96 overflow-hidden">
-        {cards.map((card, index) => (
-          <div
-            key={card.id}
-            className={`absolute inset-0 transition-transform duration-500 ease-in-out ${
-              index === currentSlide ? "translate-x-0" : index < currentSlide ? "-translate-x-full" : "translate-x-full"
-            }`}
-          >
-            <div className="flex h-full">
-              <div className="w-1/2 relative">
-                <Image
-                  src={card.image || "/placeholder.svg"}
-                  alt={card.title}
-                  fill
-                  className="object-cover"
-                  priority={index === 0}
-                />
-              </div>
-              <div className="w-1/2 flex items-center justify-center p-8 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-                <div className="text-center max-w-md">
-                  <h2 className="text-3xl font-bold mb-4">{card.title}</h2>
-                  <p className="text-lg opacity-90">{card.description}</p>
+        {cards.map((card, index) => {
+          const isBase64Image = card.image.startsWith('data:image/')
+          
+          return (
+            <div
+              key={card.id}
+              className={`absolute inset-0 transition-transform duration-500 ease-in-out ${
+                index === currentSlide ? "translate-x-0" : index < currentSlide ? "-translate-x-full" : "translate-x-full"
+              }`}
+            >
+              <div className="flex h-full">
+                <div className="w-1/2 relative">
+                  {isBase64Image ? (
+                    <Image
+                      src={card.image || "/placeholder.svg"}
+                      alt={card.title}
+                      fill
+                      className="object-cover"
+                      priority={index === 0}
+                      unoptimized // Necessário para imagens base64
+                    />
+                  ) : (
+                    <Image
+                      src={card.image || "/placeholder.svg"}
+                      alt={card.title}
+                      fill
+                      className="object-cover"
+                      priority={index === 0}
+                    />
+                  )}
+                </div>
+                <div className="w-1/2 flex items-center justify-center p-8 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+                  <div className="text-center max-w-md">
+                    <h2 className="text-3xl font-bold mb-4">{card.title}</h2>
+                    <p className="text-lg opacity-90">{card.description}</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Controles do Slideshow */}

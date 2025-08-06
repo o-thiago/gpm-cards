@@ -1,51 +1,44 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import type { CardData, CardFormData } from "@/components/ui/card"
+import { useState, useEffect } from "react";
+import type { CardData, CardFormData } from "@/components/ui/card";
 
-const INITIAL_CARDS: CardData[] = [
-  {
-    id: "1",
-    title: "Desenvolvimento Web",
-    description: "Criação de aplicações web modernas e responsivas usando as mais recentes tecnologias.",
-    image: "/placeholder.svg?height=300&width=400",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "2",
-    title: "Design UI/UX",
-    description: "Design de interfaces intuitivas e experiências de usuário excepcionais.",
-    image: "/placeholder.svg?height=300&width=400",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "3",
-    title: "Marketing Digital",
-    description: "Estratégias de marketing digital para aumentar sua presença online.",
-    image: "/placeholder.svg?height=300&width=400",
-    createdAt: new Date().toISOString(),
-  },
-]
+const INITIAL_CARDS: CardData[] = [];
 
 export function useCards() {
-  const [cards, setCards] = useState<CardData[]>([])
+  const [cards, setCards] = useState<CardData[]>([]);
 
   // Carregar cards do localStorage
   useEffect(() => {
-    const savedCards = localStorage.getItem("cards")
+    const savedCards = localStorage.getItem("cards");
     if (savedCards) {
-      setCards(JSON.parse(savedCards))
+      try {
+        setCards(JSON.parse(savedCards));
+      } catch (error) {
+        console.error("Erro ao carregar cards:", error);
+        setCards(INITIAL_CARDS);
+        localStorage.setItem("cards", JSON.stringify(INITIAL_CARDS));
+      }
     } else {
-      setCards(INITIAL_CARDS)
-      localStorage.setItem("cards", JSON.stringify(INITIAL_CARDS))
+      setCards(INITIAL_CARDS);
+      localStorage.setItem("cards", JSON.stringify(INITIAL_CARDS));
     }
-  }, [])
+  }, []);
 
   // Salvar cards no localStorage
   const saveCards = (newCards: CardData[]) => {
-    setCards(newCards)
-    localStorage.setItem("cards", JSON.stringify(newCards))
-  }
+    try {
+      setCards(newCards);
+      localStorage.setItem("cards", JSON.stringify(newCards));
+    } catch (error) {
+      console.error("Erro ao salvar cards:", error);
+      if (error instanceof Error && error.name === "QuotaExceededError") {
+        alert(
+          "Espaço de armazenamento esgotado. Tente usar imagens menores ou remover alguns cards.",
+        );
+      }
+    }
+  };
 
   const addCard = (formData: CardFormData) => {
     const newCard: CardData = {
@@ -53,11 +46,12 @@ export function useCards() {
       title: formData.title.trim(),
       description: formData.description.trim(),
       image:
-        formData.image.trim() || `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(formData.title)}`,
+        formData.image ||
+        `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(formData.title)}`,
       createdAt: new Date().toISOString(),
-    }
-    saveCards([...cards, newCard])
-  }
+    };
+    saveCards([...cards, newCard]);
+  };
 
   const updateCard = (cardId: string, formData: CardFormData) => {
     const updatedCards = cards.map((card) =>
@@ -66,22 +60,22 @@ export function useCards() {
             ...card,
             title: formData.title.trim(),
             description: formData.description.trim(),
-            image: formData.image.trim() || card.image,
+            image: formData.image || card.image,
           }
         : card,
-    )
-    saveCards(updatedCards)
-  }
+    );
+    saveCards(updatedCards);
+  };
 
   const deleteCard = (cardId: string) => {
-    const updatedCards = cards.filter((card) => card.id !== cardId)
-    saveCards(updatedCards)
-  }
+    const updatedCards = cards.filter((card) => card.id !== cardId);
+    saveCards(updatedCards);
+  };
 
   return {
     cards,
     addCard,
     updateCard,
     deleteCard,
-  }
+  };
 }

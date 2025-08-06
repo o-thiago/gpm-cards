@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreVertical, Edit, Trash2 } from "lucide-react"
+import { MoreVertical, Edit, Trash2 } from 'lucide-react'
 import Image from "next/image"
 import type { CardData } from "@/components/ui/card"
 
@@ -14,10 +14,28 @@ interface CardItemProps {
 }
 
 export function CardItem({ card, onEdit, onDelete }: CardItemProps) {
+  // Verificar se a imagem é base64 ou placeholder
+  const isBase64Image = card.image.startsWith('data:image/')
+  
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 relative group">
       <div className="relative h-48">
-        <Image src={card.image || "/placeholder.svg"} alt={card.title} fill className="object-cover" />
+        {isBase64Image ? (
+          <Image 
+            src={card.image || "/placeholder.svg"} 
+            alt={card.title} 
+            fill 
+            className="object-cover"
+            unoptimized // Necessário para imagens base64
+          />
+        ) : (
+          <Image 
+            src={card.image || "/placeholder.svg"} 
+            alt={card.title} 
+            fill 
+            className="object-cover" 
+          />
+        )}
 
         {/* Dropdown Menu */}
         <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">

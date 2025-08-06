@@ -95,12 +95,13 @@ export interface CardData {
   id: string;
   title: string;
   description: string;
-  image: string;
+  image: string; // base64
   createdAt: string;
 }
 
 export interface CardFormData {
   title: string;
   description: string;
-  image: string;
+  image: string; // base64
+  imageFile?: File; // arquivo de imagem opcional
 }

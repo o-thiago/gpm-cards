@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { ImageUpload } from "./ImageUpload"
 import type { CardData, CardFormData } from "@/components/ui/card"
 
 interface CardFormProps {
@@ -47,9 +48,13 @@ export function CardForm({ isOpen, onClose, onSubmit, editingCard }: CardFormPro
     onClose()
   }
 
+  const handleImageChange = (base64: string) => {
+    setFormData({ ...formData, image: base64 })
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{editingCard ? "Editar Card" : "Adicionar Novo Card"}</DialogTitle>
           <DialogDescription>
@@ -78,16 +83,12 @@ export function CardForm({ isOpen, onClose, onSubmit, editingCard }: CardFormPro
               required
             />
           </div>
-          <div>
-            <Label htmlFor="image">URL da Imagem (opcional)</Label>
-            <Input
-              id="image"
-              type="url"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              placeholder="https://exemplo.com/imagem.jpg"
-            />
-          </div>
+          
+          <ImageUpload
+            value={formData.image}
+            onChange={handleImageChange}
+          />
+          
           <Button type="submit" className="w-full">
             {editingCard ? "Salvar Alterações" : "Adicionar Card"}
           </Button>

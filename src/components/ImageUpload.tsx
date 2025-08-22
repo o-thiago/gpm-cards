@@ -10,20 +10,26 @@ interface ImageUploadProps {
 	value: string;
 	onChange: (base64: string) => void;
 	onFileChange?: (file: File | null) => void;
+	required?: boolean;
 }
 
 export function ImageUpload({
 	value,
 	onChange,
 	onFileChange,
+	required = false,
 }: ImageUploadProps) {
 	const [dragActive, setDragActive] = useState(false);
+	const [error, setError] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const handleFileChange = (file: File | null) => {
 		if (!file) {
 			onChange("");
 			onFileChange?.(null);
+			if (required) {
+				setError(true);
+			}
 			return;
 		}
 
@@ -45,6 +51,7 @@ export function ImageUpload({
 			const base64 = e.target?.result as string;
 			onChange(base64);
 			onFileChange?.(file);
+			setError(false);
 		};
 		reader.readAsDataURL(file);
 	};
@@ -81,6 +88,9 @@ export function ImageUpload({
 		if (inputRef.current) {
 			inputRef.current.value = "";
 		}
+		if (required) {
+			setError(true);
+		}
 	};
 
 	const openFileDialog = () => {
@@ -95,7 +105,7 @@ export function ImageUpload({
 				<div className="relative">
 					<div className="relative w-full h-48 rounded-lg overflow-hidden border">
 						<Image
-							src={value || "/placeholder.svg"}
+							src={value}
 							alt="Preview"
 							fill
 							className="object-contain"
@@ -117,6 +127,8 @@ export function ImageUpload({
 					className={`relative border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
 						dragActive
 							? "border-indigo-500 bg-indigo-50"
+							: error
+							? "border-red-500"
 							: "border-gray-300 hover:border-gray-400"
 					} w-full`}
 					onDragEnter={handleDrag}
@@ -144,6 +156,7 @@ export function ImageUpload({
 				accept="image/*"
 				onChange={handleInputChange}
 				className="hidden"
+				required={required}
 			/>
 
 			{!value && (
@@ -156,6 +169,11 @@ export function ImageUpload({
 					<Upload className="w-4 h-4 mr-2" />
 					Selecionar Imagem
 				</Button>
+			)}
+			{error && (
+				<p className="text-sm font-medium text-destructive">
+					É obrigatório o envio de uma imagem.
+				</p>
 			)}
 		</div>
 	);

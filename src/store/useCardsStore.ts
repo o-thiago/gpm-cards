@@ -21,11 +21,7 @@ const useCardsStore = create<CardsState>()(
 							id: Date.now().toString(),
 							title: formData.title.trim(),
 							description: formData.description.trim(),
-							image:
-								formData.image ||
-								`/placeholder.svg?height=300&width=400&query=${encodeURIComponent(
-									formData.title,
-								)}`,
+							image: formData.image,
 							createdAt: new Date().toISOString(),
 						},
 					],
@@ -38,7 +34,7 @@ const useCardsStore = create<CardsState>()(
 									...card,
 									title: formData.title.trim(),
 									description: formData.description.trim(),
-									image: formData.image || card.image,
+									image: formData.image,
 								}
 							: card,
 					),

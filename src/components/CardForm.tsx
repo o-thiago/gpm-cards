@@ -36,6 +36,8 @@ export function CardForm({
 		image: "",
 	});
 
+	const [imageError, setImageError] = useState(false);
+
 	useEffect(() => {
 		if (editingCard) {
 			setFormData({
@@ -46,21 +48,35 @@ export function CardForm({
 		} else {
 			setFormData({ title: "", description: "", image: "" });
 		}
+		setImageError(false);
 	}, [editingCard]);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!formData.title.trim() || !formData.description.trim()) return;
+		const isTitleValid = formData.title.trim() !== "";
+		const isDescriptionValid = formData.description.trim() !== "";
+		const isImageValid = formData.image.trim() !== "";
+
+		if (!isImageValid) {
+			setImageError(true);
+		}
+
+		if (!isTitleValid || !isDescriptionValid || !isImageValid) return;
+
 		onSubmit(formData);
 	};
 
 	const handleClose = () => {
 		setFormData({ title: "", description: "", image: "" });
+		setImageError(false);
 		onClose();
 	};
 
 	const handleImageChange = (base64: string) => {
 		setFormData({ ...formData, image: base64 });
+		if (base64.trim() !== "") {
+			setImageError(false);
+		}
 	};
 
 	return (
@@ -103,7 +119,16 @@ export function CardForm({
 						/>
 					</div>
 
-					<ImageUpload value={formData.image} onChange={handleImageChange} />
+					<ImageUpload
+						value={formData.image}
+						onChange={handleImageChange}
+						required={true}
+					/>
+					{imageError && (
+						<p className="text-sm font-medium text-destructive">
+							É obrigatório o envio de uma imagem.
+						</p>
+					)}
 
 					<Button type="submit" className="w-full">
 						{editingCard ? "Salvar Alterações" : "Adicionar Card"}

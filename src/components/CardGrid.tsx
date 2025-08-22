@@ -1,5 +1,5 @@
-import { CardItem } from "./CardItem";
 import type { CardData } from "@/components/ui/card";
+import { CardItem } from "./CardItem";
 
 interface CardGridProps {
 	cards: CardData[];

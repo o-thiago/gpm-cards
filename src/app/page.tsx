@@ -1,15 +1,14 @@
 "use client";
 
 import { useState } from "react";
-
-import { Header } from "@/components/Header";
 import { CardForm } from "@/components/CardForm";
 import { CardGrid } from "@/components/CardGrid";
-import { Slideshow } from "@/components/Slideshow";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { EmptyState } from "@/components/EmptyState";
-import { useCards } from "@/hooks/useCards";
+import { Header } from "@/components/Header";
+import { Slideshow } from "@/components/Slideshow";
 import type { CardData } from "@/components/ui/card";
+import { useCards } from "@/hooks/useCards";
 
 export default function CardsPage() {
 	const { cards, addCard, updateCard, deleteCard } = useCards();

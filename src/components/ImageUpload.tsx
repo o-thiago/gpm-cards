@@ -98,7 +98,7 @@ export function ImageUpload({
 							src={value || "/placeholder.svg"}
 							alt="Preview"
 							fill
-							className="object-cover"
+							className="object-contain"
 						/>
 					</div>
 					<Button
@@ -118,7 +118,7 @@ export function ImageUpload({
 						dragActive
 							? "border-indigo-500 bg-indigo-50"
 							: "border-gray-300 hover:border-gray-400"
-					}`}
+					} w-full`}
 					onDragEnter={handleDrag}
 					onDragLeave={handleDrag}
 					onDragOver={handleDrag}

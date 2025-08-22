@@ -36,7 +36,7 @@ export function CardItem({ card, onEdit, onDelete }: CardItemProps) {
 						src={card.image || "/placeholder.svg"}
 						alt={card.title}
 						fill
-						className="object-cover"
+						className="object-contain"
 						unoptimized // Necessário para imagens base64
 					/>
 				) : (
@@ -44,7 +44,7 @@ export function CardItem({ card, onEdit, onDelete }: CardItemProps) {
 						src={card.image || "/placeholder.svg"}
 						alt={card.title}
 						fill
-						className="object-cover"
+						className="object-contain"
 					/>
 				)}
 
@@ -71,7 +71,7 @@ export function CardItem({ card, onEdit, onDelete }: CardItemProps) {
 							</DropdownMenuItem>
 							<DropdownMenuItem
 								onClick={() => onDelete(card.id)}
-								className="cursor-pointer text-red-600 focus:text-red-600"
+								className="cursor-pointer text-destructive focus:text-destructive-foreground"
 							>
 								<Trash2 className="h-4 w-4 mr-2" />
 								Remover
@@ -84,10 +84,11 @@ export function CardItem({ card, onEdit, onDelete }: CardItemProps) {
 				<CardTitle className="text-lg">{card.title}</CardTitle>
 			</CardHeader>
 			<CardContent>
-				<CardDescription className="text-sm text-gray-600">
+				<CardDescription className="text-sm text-muted-foreground">
 					{card.description}
 				</CardDescription>
 			</CardContent>
 		</Card>
 	);
 }
+

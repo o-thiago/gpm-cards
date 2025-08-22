@@ -70,7 +70,7 @@ export default function CardsPage() {
 	}
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+		<div className="min-h-screen bg-background">
 			<Header onAddCard={handleOpenForm} />
 			<Slideshow cards={cards} />
 			<CardGrid
@@ -81,9 +81,9 @@ export default function CardsPage() {
 
 			<CardForm
 				isOpen={isFormOpen}
-				onClose={handleCloseForm}
-				onSubmit={handleSubmitForm}
-				editingCard={editingCard}
+					onClose={handleCloseForm}
+					onSubmit={handleSubmitForm}
+					editingCard={editingCard}
 			/>
 
 			<ConfirmDialog
@@ -96,3 +96,4 @@ export default function CardsPage() {
 		</div>
 	);
 }
+

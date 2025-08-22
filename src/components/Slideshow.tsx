@@ -52,7 +52,7 @@ export function Slideshow({ cards }: SlideshowProps) {
 
 	return (
 		<section
-			className="relative bg-white shadow-lg mb-8"
+			className="relative bg-card shadow-lg mb-8"
 			aria-label="Slideshow de cards"
 		>
 			<div className="relative h-96 overflow-hidden">
@@ -77,7 +77,7 @@ export function Slideshow({ cards }: SlideshowProps) {
 											src={card.image || "/placeholder.svg"}
 											alt={card.title}
 											fill
-											className="object-cover"
+											className="object-contain"
 											priority={index === 0}
 											unoptimized // Necessário para imagens base64
 										/>
@@ -86,12 +86,12 @@ export function Slideshow({ cards }: SlideshowProps) {
 											src={card.image || "/placeholder.svg"}
 											alt={card.title}
 											fill
-											className="object-cover"
+											className="object-contain"
 											priority={index === 0}
 										/>
 									)}
 								</div>
-								<div className="w-1/2 flex items-center justify-center p-8 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+								<div className="w-1/2 flex items-center justify-center p-8 bg-gradient-to-r from-primary to-green-600 text-white">
 									<div className="text-center max-w-md">
 										<h2 className="text-3xl font-bold mb-4">{card.title}</h2>
 										<p className="text-lg opacity-90">{card.description}</p>

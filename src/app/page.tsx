@@ -8,10 +8,10 @@ import { EmptyState } from "@/components/EmptyState";
 import { Header } from "@/components/Header";
 import { Slideshow } from "@/components/Slideshow";
 import type { CardData } from "@/components/ui/card";
-import { useCards } from "@/hooks/useCards";
+import useCardsStore from "@/store/useCardsStore";
 
 export default function CardsPage() {
-	const { cards, addCard, updateCard, deleteCard } = useCards();
+	const { cards, addCard, updateCard, deleteCard } = useCardsStore();
 	const [isFormOpen, setIsFormOpen] = useState(false);
 	const [editingCard, setEditingCard] = useState<CardData | null>(null);
 	const [cardToDelete, setCardToDelete] = useState<string | null>(null);

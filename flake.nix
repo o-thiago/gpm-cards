@@ -1,25 +1,51 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nix-systems.url = "github:nix-systems/default";
+    systems.url = "github:nix-systems/default";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    process-compose-flake.url = "github:Platonic-Systems/process-compose-flake";
+    services-flake.url = "github:juspay/services-flake";
   };
 
   outputs =
-    {
-      flake-parts,
-      systems,
-      ...
-    }@inputs:
-    flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = import systems;
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = import inputs.systems;
+      imports = [
+        inputs.process-compose-flake.flakeModule
+      ];
       perSystem =
-        { pkgs, ... }:
-        with pkgs;
         {
-          devShells.default = mkShell {
+          pkgs,
+          config,
+          ...
+        }:
+        {
+          process-compose."default" =
+            { ... }:
+            {
+              imports = [
+                inputs.services-flake.processComposeModules.default
+              ];
+
+              settings.processes = {
+                application.command = "npm install && npm run dev";
+              };
+
+              services.postgres."gpm-cards-db" = {
+                enable = true;
+                port = 5433;
+                initialDatabases = [ { name = "gpm-cards"; } ];
+              };
+            };
+
+          devShells.default = pkgs.mkShell {
+            inputsFrom = [
+              config.process-compose."default".services.outputs.devShell
+            ];
             packages = [
-              nodejs
-              biome
+              pkgs.nodejs
+              pkgs.biome
             ];
           };
         };

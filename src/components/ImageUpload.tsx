@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 
 interface ImageUploadProps {
 	value: string;
+	name?: string;
 	onChange: (base64: string) => void;
 	onFileChange?: (file: File | null) => void;
 	required?: boolean;
@@ -15,6 +16,7 @@ interface ImageUploadProps {
 
 export function ImageUpload({
 	value,
+	name,
 	onChange,
 	onFileChange,
 	required = false,
@@ -104,12 +106,7 @@ export function ImageUpload({
 			{value ? (
 				<div className="relative">
 					<div className="relative w-full h-48 rounded-lg overflow-hidden border">
-						<Image
-							src={value}
-							alt="Preview"
-							fill
-							className="object-contain"
-						/>
+						<Image src={value} alt="Preview" fill className="object-contain" />
 					</div>
 					<Button
 						type="button"
@@ -128,8 +125,8 @@ export function ImageUpload({
 						dragActive
 							? "border-indigo-500 bg-indigo-50"
 							: error
-							? "border-red-500"
-							: "border-gray-300 hover:border-gray-400"
+								? "border-red-500"
+								: "border-gray-300 hover:border-gray-400"
 					} w-full`}
 					onDragEnter={handleDrag}
 					onDragLeave={handleDrag}
@@ -154,6 +151,7 @@ export function ImageUpload({
 				ref={inputRef}
 				type="file"
 				accept="image/*"
+				name={name}
 				onChange={handleInputChange}
 				className="hidden"
 				required={required}

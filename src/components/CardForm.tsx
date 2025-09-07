@@ -53,6 +53,7 @@ export function CardForm({
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
+
 		const isTitleValid = formData.title.trim() !== "";
 		const isDescriptionValid = formData.description.trim() !== "";
 		const isImageValid = formData.image.trim() !== "";
@@ -97,6 +98,7 @@ export function CardForm({
 						<Label htmlFor="title">Título</Label>
 						<Input
 							id="title"
+							name="title"
 							value={formData.title}
 							onChange={(e) =>
 								setFormData({ ...formData, title: e.target.value })
@@ -109,6 +111,7 @@ export function CardForm({
 						<Label htmlFor="description">Descrição</Label>
 						<Textarea
 							id="description"
+							name="description"
 							value={formData.description}
 							onChange={(e) =>
 								setFormData({ ...formData, description: e.target.value })
@@ -120,9 +123,9 @@ export function CardForm({
 					</div>
 
 					<ImageUpload
+						name="image"
 						value={formData.image}
 						onChange={handleImageChange}
-						required={true}
 					/>
 					{imageError && (
 						<p className="text-sm font-medium text-destructive">

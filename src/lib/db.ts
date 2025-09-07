@@ -1,3 +1,5 @@
+import type { AdapterUser } from "@auth/core/adapters";
+import type { Database as AuthDatabase } from "@auth/kysely-adapter";
 import type { ColumnType } from "kysely";
 import { Kysely, PostgresDialect } from "kysely";
 import { Pool } from "pg";
@@ -13,8 +15,13 @@ export interface CardsTable {
 	createdAt: Generated<Timestamp>;
 }
 
-export interface Database {
+interface User extends AdapterUser {
+	password?: string | null;
+}
+
+export interface Database extends AuthDatabase {
 	cards: CardsTable;
+	User: User;
 }
 
 const dialect = new PostgresDialect({

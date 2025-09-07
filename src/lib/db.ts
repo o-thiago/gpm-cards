@@ -1,25 +1,29 @@
+import type { ColumnType } from "kysely";
 import { Kysely, PostgresDialect } from "kysely";
 import { Pool } from "pg";
 
-interface CardTable {
-	id: string;
-	name: string;
+export type Generated<T> = T | ColumnType<T, T | undefined, T>;
+export type Timestamp = ColumnType<Date, Date | string, Date | string>;
+
+export interface CardsTable {
+	id: Generated<string>;
+	title: string;
 	description: string;
-	imageUrl: string;
+	image: string;
+	createdAt: Generated<Timestamp>;
 }
 
-interface Database {
-	card: CardTable;
+export interface Database {
+	cards: CardsTable;
 }
 
 const dialect = new PostgresDialect({
 	pool: new Pool({
-		host: "localhost",
-		port: 5433,
-		database: "gpm-cards-db",
+		connectionString: process.env.POSTGRES_URL,
 	}),
 });
 
 export const db = new Kysely<Database>({
 	dialect,
 });
+

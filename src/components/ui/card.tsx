@@ -96,7 +96,6 @@ export interface CardData {
 	title: string;
 	description: string;
 	image: string; // base64
-	createdAt: string;
 }
 
 export interface CardFormData {

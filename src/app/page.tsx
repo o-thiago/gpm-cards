@@ -1,20 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CardForm } from "@/components/CardForm";
 import { CardGrid } from "@/components/CardGrid";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { Header } from "@/components/Header";
 import { Slideshow } from "@/components/Slideshow";
-import type { CardData } from "@/components/ui/card";
-import useCardsStore from "@/store/useCardsStore";
+import type { CardData, CardFormData } from "@/components/ui/card";
+import { client } from "@/lib/orpc";
 
 export default function CardsPage() {
-	const { cards, addCard, updateCard, deleteCard } = useCardsStore();
+	const [cards, setCards] = useState<CardData[]>([]);
 	const [isFormOpen, setIsFormOpen] = useState(false);
 	const [editingCard, setEditingCard] = useState<CardData | null>(null);
 	const [cardToDelete, setCardToDelete] = useState<string | null>(null);
+
+	useEffect(() => {
+		const fetchCards = async () => {
+			const fetchedCards = await client.cards.get();
+			setCards(fetchedCards);
+		};
+		fetchCards();
+	}, []);
 
 	const handleOpenForm = () => {
 		setEditingCard(null);
@@ -26,15 +34,18 @@ export default function CardsPage() {
 		setEditingCard(null);
 	};
 
-	const handleSubmitForm = (formData: {
-		title: string;
-		description: string;
-		image: string;
-	}) => {
+	const handleSubmitForm = async (formData: CardFormData) => {
 		if (editingCard) {
-			updateCard(editingCard.id, formData);
+			const updatedCard = await client.cards.update({
+				...formData,
+				id: editingCard.id,
+			});
+			setCards(
+				cards.map((card) => (card.id === updatedCard.id ? updatedCard : card)),
+			);
 		} else {
-			addCard(formData);
+			const newCard = await client.cards.create(formData);
+			setCards([...cards, newCard]);
 		}
 		handleCloseForm();
 	};
@@ -48,9 +59,10 @@ export default function CardsPage() {
 		setCardToDelete(cardId);
 	};
 
-	const confirmDeleteCard = () => {
+	const confirmDeleteCard = async () => {
 		if (cardToDelete) {
-			deleteCard(cardToDelete);
+			await client.cards.delete({ id: cardToDelete });
+			setCards(cards.filter((card) => card.id !== cardToDelete));
 			setCardToDelete(null);
 		}
 	};
@@ -81,9 +93,9 @@ export default function CardsPage() {
 
 			<CardForm
 				isOpen={isFormOpen}
-					onClose={handleCloseForm}
-					onSubmit={handleSubmitForm}
-					editingCard={editingCard}
+				onClose={handleCloseForm}
+				onSubmit={handleSubmitForm}
+				editingCard={editingCard}
 			/>
 
 			<ConfirmDialog
@@ -96,4 +108,3 @@ export default function CardsPage() {
 		</div>
 	);
 }
-

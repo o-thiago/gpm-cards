@@ -33,4 +33,3 @@ const dialect = new PostgresDialect({
 export const db = new Kysely<Database>({
 	dialect,
 });
-

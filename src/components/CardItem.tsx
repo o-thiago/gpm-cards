@@ -1,8 +1,8 @@
 "use client";
 
 import { Edit, MoreVertical, Trash2 } from "lucide-react";
-import type { Session } from "next-auth";
 import Image from "next/image";
+import type { Session } from "next-auth";
 import { Button } from "@/components/ui/button";
 import type { CardData } from "@/components/ui/card";
 import {
@@ -83,4 +83,3 @@ export function CardItem({ card, onEdit, onDelete, session }: CardItemProps) {
 		</Card>
 	);
 }
-

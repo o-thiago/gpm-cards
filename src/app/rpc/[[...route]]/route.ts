@@ -1,9 +1,9 @@
 "use server";
 
 import { RPCHandler } from "@orpc/server/fetch";
-import { appRouter } from "./router";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { appRouter } from "./router";
 
 const handler = new RPCHandler(appRouter);
 

@@ -36,6 +36,10 @@
                 enable = true;
                 port = 5433;
                 initialDatabases = [ { name = "gpm-cards"; } ];
+                initialScript.after = # sql
+                  ''
+                    CREATE ROLE postgres WITH SUPERUSER LOGIN PASSWORD 'postgres';
+                  '';
               };
             };
 

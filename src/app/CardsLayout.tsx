@@ -1,5 +1,6 @@
 "use client";
 
+import type { Session } from "next-auth";
 import { useState } from "react";
 import { CardForm } from "@/components/CardForm";
 import { CardGrid } from "@/components/CardGrid";
@@ -12,9 +13,10 @@ import { client } from "@/lib/orpc";
 
 interface CardsLayoutProps {
 	initialCards: CardData[];
+	session: Session | null;
 }
 
-export function CardsLayout({ initialCards }: CardsLayoutProps) {
+export function CardsLayout({ initialCards, session }: CardsLayoutProps) {
 	const [cards, setCards] = useState<CardData[]>(initialCards);
 	const [isFormOpen, setIsFormOpen] = useState(false);
 	const [editingCard, setEditingCard] = useState<CardData | null>(null);
@@ -66,41 +68,48 @@ export function CardsLayout({ initialCards }: CardsLayoutProps) {
 	if (cards.length === 0) {
 		return (
 			<>
-				<EmptyState onAddCard={handleOpenForm} />
-				<CardForm
-					isOpen={isFormOpen}
-					onClose={handleCloseForm}
-					onSubmit={handleSubmitForm}
-					editingCard={editingCard}
-				/>
+				<Header onAddCard={handleOpenForm} session={session} />
+				<EmptyState onAddCard={handleOpenForm} session={session} />
+				{session?.user && (
+					<CardForm
+						isOpen={isFormOpen}
+						onClose={handleCloseForm}
+						onSubmit={handleSubmitForm}
+						editingCard={editingCard}
+					/>
+				)}
 			</>
 		);
 	}
 
 	return (
 		<div className="min-h-screen bg-background">
-			<Header onAddCard={handleOpenForm} />
+			<Header onAddCard={handleOpenForm} session={session} />
 			<Slideshow cards={cards} />
 			<CardGrid
 				cards={cards}
 				onEditCard={handleEditCard}
 				onDeleteCard={handleDeleteCard}
+				session={session}
 			/>
 
-			<CardForm
-				isOpen={isFormOpen}
-				onClose={handleCloseForm}
-				onSubmit={handleSubmitForm}
-				editingCard={editingCard}
-			/>
-
-			<ConfirmDialog
-				isOpen={!!cardToDelete}
-				onClose={() => setCardToDelete(null)}
-				onConfirm={confirmDeleteCard}
-				title="Confirmar Exclusão"
-				description="Tem certeza que deseja remover este card? Esta ação não pode ser desfeita."
-			/>
+			{session?.user && (
+				<>
+					<CardForm
+						isOpen={isFormOpen}
+						onClose={handleCloseForm}
+						onSubmit={handleSubmitForm}
+						editingCard={editingCard}
+					/>
+					<ConfirmDialog
+						isOpen={!!cardToDelete}
+						onClose={() => setCardToDelete(null)}
+						onConfirm={confirmDeleteCard}
+						title="Confirmar Exclusão"
+						description="Tem certeza que deseja remover este card? Esta ação não pode ser desfeita."
+					/>
+				</>
+			)}
 		</div>
 	);
 }

@@ -1,13 +1,20 @@
 import type { CardData } from "@/components/ui/card";
+import type { Session } from "next-auth";
 import { CardItem } from "./CardItem";
 
 interface CardGridProps {
 	cards: CardData[];
 	onEditCard: (card: CardData) => void;
 	onDeleteCard: (cardId: string) => void;
+	session: Session | null;
 }
 
-export function CardGrid({ cards, onEditCard, onDeleteCard }: CardGridProps) {
+export function CardGrid({
+	cards,
+	onEditCard,
+	onDeleteCard,
+	session,
+}: CardGridProps) {
 	return (
 		<main className="container mx-auto px-4 pb-8">
 			<h2 className="text-2xl font-bold text-gray-800 mb-6">Todos os Cards</h2>
@@ -18,6 +25,7 @@ export function CardGrid({ cards, onEditCard, onDeleteCard }: CardGridProps) {
 						card={card}
 						onEdit={onEditCard}
 						onDelete={onDeleteCard}
+						session={session}
 					/>
 				))}
 			</div>

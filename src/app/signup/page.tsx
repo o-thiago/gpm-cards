@@ -1,5 +1,6 @@
 "use client";
 
+import type { ValidationError } from "joi";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -15,28 +16,72 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
 import { client } from "@/lib/orpc";
+import { signupSchema } from "@/lib/validators";
+
+function isValidationError(error: unknown): error is ValidationError {
+	const err = error as ValidationError;
+	return err?.isJoi === true && Array.isArray(err.details);
+}
+
+function getErrorMessage(error: unknown): string {
+	if (isValidationError(error)) {
+		const { details } = error;
+		const [detail] = details;
+		if (detail.path.includes("password")) {
+			return `A senha deve ter no mínimo ${PASSWORD_MIN_LENGTH} caracteres.`;
+		}
+		if (detail.path.includes("email")) {
+			return "Por favor, insira um e-mail válido.";
+		}
+		return "Por favor, preencha todos os campos corretamente.";
+	}
+
+	return "Ocorreu um erro inesperado.";
+}
 
 export default function SignupPage() {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [error, setError] = useState<string | null>(null);
 	const router = useRouter();
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		setError(null);
+
+		const { error: validationError } = signupSchema.validate({
+			name,
+			email,
+			password,
+		});
+
+		if (validationError) {
+			setError(getErrorMessage(validationError));
+			return;
+		}
+
 		try {
 			await client.auth.signup({ name, email, password });
-			const result = await signIn("credentials", {
-				redirect: false,
-				email,
-				password,
-			});
-			if (result?.ok) {
-				router.push("/");
+		} catch (err) {
+			if (err instanceof Error) {
+				setError(err.message);
+				return;
 			}
-		} catch (error) {
-			console.error(error);
+		}
+
+		const result = await signIn("credentials", {
+			redirect: false,
+			email,
+			password,
+		});
+
+		if (result?.ok) {
+			router.push("/");
+		} else {
+			setError("Credenciais inválidas. Verifique seu e-mail e senha.");
 		}
 	};
 
@@ -82,7 +127,11 @@ export default function SignupPage() {
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
 							/>
+							<p className="text-sm text-muted-foreground">
+								A senha deve ter no mínimo {PASSWORD_MIN_LENGTH} caracteres.
+							</p>
 						</div>
+						{error && <p className="text-red-500 text-sm">{error}</p>}
 					</CardContent>
 					<CardFooter className="flex flex-col gap-4">
 						<Button type="submit" className="w-full">

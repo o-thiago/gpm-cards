@@ -9,14 +9,20 @@ import { EmptyState } from "@/components/EmptyState";
 import { Header } from "@/components/Header";
 import { Slideshow } from "@/components/Slideshow";
 import type { CardData, CardFormData } from "@/components/ui/card";
+import type { CardCategory } from "@/lib/db";
 import { client } from "@/lib/orpc";
 
 interface CardsLayoutProps {
 	initialCards: CardData[];
 	session: Session | null;
+	category: CardCategory;
 }
 
-export function CardsLayout({ initialCards, session }: CardsLayoutProps) {
+export function CardsLayout({
+	initialCards,
+	session,
+	category,
+}: CardsLayoutProps) {
 	const [cards, setCards] = useState<CardData[]>(initialCards);
 	const [isFormOpen, setIsFormOpen] = useState(false);
 	const [editingCard, setEditingCard] = useState<CardData | null>(null);
@@ -33,16 +39,17 @@ export function CardsLayout({ initialCards, session }: CardsLayoutProps) {
 	};
 
 	const handleSubmitForm = async (formData: CardFormData) => {
+		const dataWithCategory = { ...formData, category };
 		if (editingCard) {
 			const updatedCard = await client.cards.update({
-				...formData,
+				...dataWithCategory,
 				id: editingCard.id,
 			});
 			setCards(
 				cards.map((card) => (card.id === updatedCard.id ? updatedCard : card)),
 			);
 		} else {
-			const newCard = await client.cards.create(formData);
+			const newCard = await client.cards.create(dataWithCategory);
 			setCards([...cards, newCard]);
 		}
 		handleCloseForm();

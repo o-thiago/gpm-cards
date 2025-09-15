@@ -5,6 +5,7 @@ export const cardSchema = Joi.object({
 	title: Joi.string().min(1).required(),
 	description: Joi.string().min(1).required(),
 	image: Joi.string().min(1).required(),
+	category: Joi.string().valid("RULE", "WARNING", "LINK").required(),
 });
 
 export const signupSchema = Joi.object({

@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import Link from "next/link";
 import type { Session } from "next-auth";
 import { signIn, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -12,9 +13,28 @@ export function Header({ onAddCard, session }: HeaderProps) {
 	return (
 		<header className="bg-card shadow-sm border-b">
 			<div className="container mx-auto px-4 py-4 flex justify-between items-center">
-				<h1 className="text-2xl font-bold text-primary">
-					GPMecatrônica - Cards
-				</h1>
+				<div className="flex items-center gap-8">
+					<h1 className="text-2xl font-bold text-primary">
+						GPMecatrônica - Cards
+					</h1>
+					<nav className="flex items-center gap-4">
+						<Link
+							href="/warnings"
+							className="text-muted-foreground hover:text-primary"
+						>
+							Avisos
+						</Link>
+						<Link href="/" className="text-muted-foreground hover:text-primary">
+							Regras
+						</Link>
+						<Link
+							href="/links"
+							className="text-muted-foreground hover:text-primary"
+						>
+							Links
+						</Link>
+					</nav>
+				</div>
 				<div className="flex items-center gap-4">
 					{session ? (
 						<>

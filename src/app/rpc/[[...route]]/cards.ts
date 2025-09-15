@@ -16,9 +16,16 @@ const adminMiddleware = os
 const adminRoute = os.use(adminMiddleware);
 
 export const cards = os.router({
-	get: os
-		.route({ method: "GET" })
-		.handler(async () => await db.selectFrom("Cards").selectAll().execute()),
+	getByCategory: os
+		.input(Joi.object({ category: Joi.string().valid("RULE", "WARNING", "LINK").required() }))
+		.handler(
+			async ({ input: { category } }) =>
+				await db
+					.selectFrom("Cards")
+					.where("category", "=", category)
+					.selectAll()
+					.execute(),
+		),
 	create: adminRoute.input(cardSchema).handler(async ({ input }) => {
 		return await db
 			.insertInto("Cards")

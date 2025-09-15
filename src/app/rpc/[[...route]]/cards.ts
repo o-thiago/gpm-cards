@@ -4,16 +4,6 @@ import type { Session } from "next-auth";
 import { db } from "@/lib/db";
 import { cardSchema } from "@/lib/validators";
 
-const authMiddleware = os
-	.$context<{ session?: Session }>()
-	.middleware(async ({ context, next }) => {
-		if (!context.session?.user) {
-			throw new Error("UNAUTHORIZED");
-		}
-
-		return await next({ context });
-	});
-
 const adminMiddleware = os
 	.$context<{ session?: Session }>()
 	.middleware(async ({ context, next }) => {
@@ -23,16 +13,15 @@ const adminMiddleware = os
 		return await next({ context });
 	});
 
-const protectedRoute = os.use(authMiddleware);
-const adminRoute = os.use(authMiddleware).use(adminMiddleware);
+const adminRoute = os.use(adminMiddleware);
 
 export const cards = os.router({
 	get: os
 		.route({ method: "GET" })
-		.handler(async () => await db.selectFrom("cards").selectAll().execute()),
+		.handler(async () => await db.selectFrom("Cards").selectAll().execute()),
 	create: adminRoute.input(cardSchema).handler(async ({ input }) => {
 		return await db
-			.insertInto("cards")
+			.insertInto("Cards")
 			.values(input)
 			.returningAll()
 			.executeTakeFirstOrThrow();
@@ -42,7 +31,7 @@ export const cards = os.router({
 		.handler(async ({ input }) => {
 			const { id, ...updateData } = input;
 			return await db
-				.updateTable("cards")
+				.updateTable("Cards")
 				.set(updateData)
 				.where("id", "=", id)
 				.returningAll()
@@ -52,7 +41,7 @@ export const cards = os.router({
 		.input(Joi.object({ id: Joi.string().uuid() }))
 		.handler(async ({ input: { id } }) => {
 			return await db
-				.deleteFrom("cards")
+				.deleteFrom("Cards")
 				.where("id", "=", id)
 				.returningAll()
 				.executeTakeFirstOrThrow();

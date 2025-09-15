@@ -1,8 +1,10 @@
-import type { Kysely } from 'kysely'
+import { type Kysely } from 'kysely'
+import {sql} from "kysely"
+import {GPMDatabase} from '../../../src/lib/db'
 
-export async function up(db: Kysely<any>): Promise<void> {
-  await db.schema
-    .createType('Role')
+export async function up(db: Kysely<GPMDatabase>): Promise<void> {
+    await db.schema
+    .createType('role')
     .asEnum(['ADMIN', 'GUEST'])
     .execute()
   await db.schema
@@ -13,7 +15,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('emailVerified', 'timestamptz')
     .addColumn('image', 'text')
     .addColumn('password', 'text')
-    .addColumn('role', 'Role', (col) => col.defaultTo('GUEST').notNull())
+    .addColumn("role", sql`role`, (col) => col.defaultTo('GUEST').notNull())
     .execute()
 
   await db.schema
@@ -53,5 +55,5 @@ export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.dropTable('Session').execute()
   await db.schema.dropTable('Account').execute()
   await db.schema.dropTable('User').execute()
-  await db.schema.dropType('Role').execute()
+  await db.schema.dropType('role').execute()
 }

@@ -20,7 +20,7 @@ interface User extends AdapterUser {
 	role: "GUEST" | "ADMIN";
 }
 
-export interface Database extends AuthDatabase {
+export interface GPMDatabase extends AuthDatabase {
 	Cards: CardsTable;
 	User: User;
 }
@@ -31,6 +31,6 @@ const dialect = new PostgresDialect({
 	}),
 });
 
-export const db = new Kysely<Database>({
+export const db = new Kysely<GPMDatabase>({
 	dialect,
 });

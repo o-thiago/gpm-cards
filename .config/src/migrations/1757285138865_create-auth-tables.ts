@@ -1,8 +1,7 @@
 import { type Kysely } from 'kysely'
 import {sql} from "kysely"
-import {GPMDatabase} from '../../../src/lib/db'
 
-export async function up(db: Kysely<GPMDatabase>): Promise<void> {
+export async function up(db: Kysely<any>): Promise<void> {
     await db.schema
     .createType('role')
     .asEnum(['ADMIN', 'GUEST'])

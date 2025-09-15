@@ -17,10 +17,11 @@ export interface CardsTable {
 
 interface User extends AdapterUser {
 	password?: string | null;
+	role: "GUEST" | "ADMIN";
 }
 
 export interface Database extends AuthDatabase {
-	cards: CardsTable;
+	Cards: CardsTable;
 	User: User;
 }
 

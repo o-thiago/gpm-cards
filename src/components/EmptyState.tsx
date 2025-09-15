@@ -22,7 +22,7 @@ export function EmptyState({ onAddCard, session }: EmptyStateProps) {
 							? "Crie e gerencie os cards do grupo de pesquisa."
 							: "Por favor, faça login para criar e gerenciar os cards do grupo de pesquisa."}
 					</p>
-					{session && (
+					{session?.user?.role === "ADMIN" && (
 						<Button onClick={onAddCard} size="lg">
 							<Plus className="w-5 h-5 mr-2" />
 							Adicionar Card

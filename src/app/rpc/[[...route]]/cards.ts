@@ -14,20 +14,30 @@ const authMiddleware = os
 		return await next({ context });
 	});
 
+const adminMiddleware = os
+	.$context<{ session?: Session }>()
+	.middleware(async ({ context, next }) => {
+		if (context.session?.user?.role !== "ADMIN") {
+			throw new Error("FORBIDDEN");
+		}
+		return await next({ context });
+	});
+
 const protectedRoute = os.use(authMiddleware);
+const adminRoute = os.use(authMiddleware).use(adminMiddleware);
 
 export const cards = os.router({
 	get: os
 		.route({ method: "GET" })
 		.handler(async () => await db.selectFrom("cards").selectAll().execute()),
-	create: protectedRoute.input(cardSchema).handler(async ({ input }) => {
+	create: adminRoute.input(cardSchema).handler(async ({ input }) => {
 		return await db
 			.insertInto("cards")
 			.values(input)
 			.returningAll()
 			.executeTakeFirstOrThrow();
 	}),
-	update: protectedRoute
+	update: adminRoute
 		.input(cardSchema.keys({ id: Joi.string().uuid() }))
 		.handler(async ({ input }) => {
 			const { id, ...updateData } = input;
@@ -38,7 +48,7 @@ export const cards = os.router({
 				.returningAll()
 				.executeTakeFirstOrThrow();
 		}),
-	delete: protectedRoute
+	delete: adminRoute
 		.input(Joi.object({ id: Joi.string().uuid() }))
 		.handler(async ({ input: { id } }) => {
 			return await db

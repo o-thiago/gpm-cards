@@ -2,6 +2,10 @@ import type { Kysely } from 'kysely'
 
 export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
+    .createType('Role')
+    .asEnum(['ADMIN', 'GUEST'])
+    .execute()
+  await db.schema
     .createTable('User')
     .addColumn('id', 'text', (col) => col.primaryKey())
     .addColumn('name', 'text')
@@ -9,6 +13,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('emailVerified', 'timestamptz')
     .addColumn('image', 'text')
     .addColumn('password', 'text')
+    .addColumn('role', 'Role', (col) => col.defaultTo('GUEST').notNull())
     .execute()
 
   await db.schema
@@ -48,4 +53,5 @@ export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.dropTable('Session').execute()
   await db.schema.dropTable('Account').execute()
   await db.schema.dropTable('User').execute()
+  await db.schema.dropType('Role').execute()
 }

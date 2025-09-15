@@ -18,10 +18,12 @@ export function Header({ onAddCard, session }: HeaderProps) {
 				<div className="flex items-center gap-4">
 					{session ? (
 						<>
-							<Button onClick={onAddCard}>
-								<Plus className="w-4 h-4 mr-2" />
-								Adicionar Card
-							</Button>
+							{session.user?.role === "ADMIN" && (
+								<Button onClick={onAddCard}>
+									<Plus className="w-4 h-4 mr-2" />
+									Adicionar Card
+								</Button>
+							)}
 							<Button onClick={() => signOut()}>Logout</Button>
 						</>
 					) : (

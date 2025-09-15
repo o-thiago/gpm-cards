@@ -15,6 +15,8 @@ export function CardGrid({
 	onDeleteCard,
 	session,
 }: CardGridProps) {
+	const isAdmin = session?.user?.role === "ADMIN";
+
 	return (
 		<main className="container mx-auto px-4 pb-8">
 			<h2 className="text-2xl font-bold text-gray-800 mb-6">Todos os Cards</h2>
@@ -23,8 +25,8 @@ export function CardGrid({
 					<CardItem
 						key={card.id}
 						card={card}
-						onEdit={onEditCard}
-						onDelete={onDeleteCard}
+						onEdit={isAdmin ? onEditCard : () => {}}
+						onDelete={isAdmin ? onDeleteCard : () => {}}
 						session={session}
 					/>
 				))}

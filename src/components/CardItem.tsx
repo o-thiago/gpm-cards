@@ -39,7 +39,7 @@ export function CardItem({ card, onEdit, onDelete, session }: CardItemProps) {
 				/>
 
 				{/* Dropdown Menu */}
-				{session?.user && (
+				{session?.user?.role === "ADMIN" && (
 					<div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>

@@ -11,7 +11,7 @@ interface HeaderProps {
 
 export function Header({ onAddCard, session }: HeaderProps) {
 	return (
-		<header className="bg-card shadow-sm border-b">
+		<header className="sticky top-0 z-10 bg-white/30 backdrop-blur-lg border-b border-white/20 shadow-sm">
 			<div className="container mx-auto px-4 py-4 flex justify-between items-center">
 				<div className="flex items-center gap-8">
 					<h1 className="text-2xl font-bold text-primary">

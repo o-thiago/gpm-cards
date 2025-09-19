@@ -90,7 +90,7 @@ export function CardsLayout({
 	}
 
 	return (
-		<div className="min-h-screen bg-background">
+		<div className="min-h-screen">
 			<Header onAddCard={handleOpenForm} session={session} />
 			<Slideshow cards={cards} />
 			<CardGrid

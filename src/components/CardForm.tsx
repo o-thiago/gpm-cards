@@ -82,7 +82,7 @@ export function CardForm({
 
 	return (
 		<Dialog open={isOpen} onOpenChange={handleClose}>
-			<DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+			<DialogContent className="max-h-[90vh] overflow-y-auto bg-white/90 backdrop-blur-lg border border-white/20">
 				<DialogHeader>
 					<DialogTitle>
 						{editingCard ? "Editar Card" : "Adicionar Novo Card"}

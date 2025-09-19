@@ -7,6 +7,8 @@ import { Pool } from "pg";
 export type Generated<T> = T | ColumnType<T, T | undefined, T>;
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export type CardCategory = "RULE" | "WARNING" | "LINK";
+
 export interface CardsTable {
 	id: Generated<string>;
 	title: string;

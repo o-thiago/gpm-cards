@@ -25,6 +25,7 @@ export const auth = os.router({
 						name: input.name,
 						email: input.email,
 						password: hashedPassword,
+						role: "GUEST",
 					})
 					.returningAll()
 					.executeTakeFirstOrThrow();

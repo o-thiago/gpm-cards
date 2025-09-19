@@ -2,10 +2,29 @@ import type { Database as AuthDatabase } from "@auth/kysely-adapter";
 import { KyselyAdapter } from "@auth/kysely-adapter";
 import bcrypt from "bcrypt";
 import { Kysely, PostgresDialect } from "kysely";
-import type { NextAuthOptions } from "next-auth";
+import type { DefaultSession, NextAuthOptions } from "next-auth";
+import type { Adapter } from "next-auth/adapters";
+import type { DefaultJWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { Pool } from "pg";
-import { db } from "@/lib/db";
+import { db, type GPMUserExtension, type GPMUserRole } from "@/lib/db";
+
+declare module "next-auth" {
+	export interface User extends GPMUserExtension {}
+	export interface Session {
+		user: GPMUserExtension & DefaultSession["user"];
+	}
+}
+
+declare module "next-auth/jwt" {
+	interface JWT extends DefaultJWT {
+		role: GPMUserRole;
+	}
+}
+
+declare module "@auth/core/adapters" {
+	interface AdapterUser extends GPMUserExtension {}
+}
 
 const dialect = new PostgresDialect({
 	pool: new Pool({
@@ -18,7 +37,7 @@ const authDb = new Kysely<AuthDatabase>({
 });
 
 export const authOptions: NextAuthOptions = {
-	adapter: KyselyAdapter(authDb),
+	adapter: KyselyAdapter(authDb) as Adapter,
 	providers: [
 		CredentialsProvider({
 			name: "Credentials",

@@ -17,7 +17,11 @@ const adminRoute = os.use(adminMiddleware);
 
 export const cards = os.router({
 	getByCategory: os
-		.input(Joi.object({ category: Joi.string().valid("RULE", "WARNING", "LINK").required() }))
+		.input(
+			Joi.object({
+				category: Joi.string().valid("RULE", "WARNING", "LINK").required(),
+			}),
+		)
 		.handler(
 			async ({ input: { category } }) =>
 				await db

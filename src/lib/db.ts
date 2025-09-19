@@ -15,16 +15,21 @@ export interface CardsTable {
 	description: string;
 	image: string;
 	createdAt: Generated<Timestamp>;
+	category: CardCategory;
 }
 
-interface User extends AdapterUser {
-	password?: string | null;
-	role: "GUEST" | "ADMIN";
+export type GPMUserRole = "GUEST" | "ADMIN";
+
+export interface GPMUserExtension {
+	password: string;
+	role: GPMUserRole;
 }
+
+export interface GPMUser extends GPMUserExtension, AdapterUser {}
 
 export interface GPMDatabase extends AuthDatabase {
 	Cards: CardsTable;
-	User: User;
+	User: GPMUser;
 }
 
 const dialect = new PostgresDialect({

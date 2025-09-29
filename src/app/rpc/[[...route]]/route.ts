@@ -8,7 +8,7 @@ import { appRouter } from "./router";
 const handler = new RPCHandler(appRouter);
 
 async function handleRequest(request: Request) {
-	const session = await getServerSession(authOptions);
+	const session = (await getServerSession(authOptions)) ?? null;
 	const { response } = await handler.handle(request, {
 		prefix: "/rpc",
 		context: {

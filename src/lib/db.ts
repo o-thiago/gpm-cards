@@ -4,6 +4,8 @@ import type { ColumnType } from "kysely";
 import { Kysely, PostgresDialect } from "kysely";
 import { Pool } from "pg";
 
+console.log("Connecting to database:", process.env.DATABASE_URL);
+
 export type Generated<T> = T | ColumnType<T, T | undefined, T>;
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
@@ -14,6 +16,9 @@ export interface CardsTable {
 	title: string;
 	description: string;
 	image: string;
+	metadata: {
+		link?: string;
+	};
 	createdAt: Generated<Timestamp>;
 	category: CardCategory;
 }
@@ -34,7 +39,7 @@ export interface GPMDatabase extends AuthDatabase {
 
 const dialect = new PostgresDialect({
 	pool: new Pool({
-		connectionString: process.env.POSTGRES_URL,
+		connectionString: process.env.DATABASE_URL,
 	}),
 });
 

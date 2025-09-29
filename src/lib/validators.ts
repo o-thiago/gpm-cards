@@ -6,6 +6,13 @@ export const cardSchema = Joi.object({
 	description: Joi.string().min(1).required(),
 	image: Joi.string().min(1).required(),
 	category: Joi.string().valid("RULE", "WARNING", "LINK").required(),
+	metadata: Joi.when("category", {
+		is: "LINK",
+		then: Joi.object({
+			link: Joi.string().uri().required(),
+		}).required(),
+		otherwise: Joi.object().optional(),
+	}),
 });
 
 export const signupSchema = Joi.object({

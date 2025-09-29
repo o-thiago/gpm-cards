@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth/next";
+import type { CardCategory } from "@/components/ui/card";
 import { authOptions } from "@/lib/auth";
-import type { CardCategory } from "@/lib/db";
 import { client } from "@/lib/orpc";
 import { CardsLayout } from "./CardsLayout";
 

@@ -1,5 +1,6 @@
 import CategoryPage from "./CategoryPage";
 
-export default function RulesPage() {
-	return <CategoryPage category="RULE" />;
+export default function MainPage() {
+	return <CategoryPage category="LINK" />;
 }
+

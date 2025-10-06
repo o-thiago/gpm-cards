@@ -24,13 +24,13 @@ export function Header({ onAddCard, session }: HeaderProps) {
 						>
 							Avisos
 						</Link>
-						<Link href="/" className="text-muted-foreground hover:text-primary">
-							Regras
-						</Link>
 						<Link
-							href="/links"
+							href="/rules"
 							className="text-muted-foreground hover:text-primary"
 						>
+							Regras
+						</Link>
+						<Link href="/" className="text-muted-foreground hover:text-primary">
 							Links
 						</Link>
 					</nav>

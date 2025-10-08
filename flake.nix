@@ -46,7 +46,6 @@
 
               services.postgres."gpm-cards-db" = {
                 enable = true;
-                port = 5433;
                 initialDatabases = [ { name = "gpm-cards"; } ];
                 initialScript.after = # sql
                   ''

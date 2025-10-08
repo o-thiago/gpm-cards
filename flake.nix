@@ -20,7 +20,6 @@
         {
           pkgs,
           config,
-          lib,
           ...
         }:
         let

@@ -4,30 +4,42 @@ import type { ColumnType } from "kysely";
 import { Kysely, PostgresDialect } from "kysely";
 import { Pool } from "pg";
 
+console.log("Connecting to database:", process.env.DATABASE_URL);
+
 export type Generated<T> = T | ColumnType<T, T | undefined, T>;
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
+
+export type CardCategory = "RULE" | "WARNING" | "LINK";
 
 export interface CardsTable {
 	id: Generated<string>;
 	title: string;
 	description: string;
 	image: string;
+	metadata: {
+		link?: string;
+	};
 	createdAt: Generated<Timestamp>;
+	category: CardCategory;
 }
 
-interface User extends AdapterUser {
-	password?: string | null;
-	role: "GUEST" | "ADMIN";
+export type GPMUserRole = "GUEST" | "ADMIN";
+
+export interface GPMUserExtension {
+	password: string;
+	role: GPMUserRole;
 }
+
+export interface GPMUser extends GPMUserExtension, AdapterUser {}
 
 export interface GPMDatabase extends AuthDatabase {
 	Cards: CardsTable;
-	User: User;
+	User: GPMUser;
 }
 
 const dialect = new PostgresDialect({
 	pool: new Pool({
-		connectionString: process.env.POSTGRES_URL,
+		connectionString: process.env.DATABASE_URL,
 	}),
 });
 

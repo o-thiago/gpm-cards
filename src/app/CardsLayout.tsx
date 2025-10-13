@@ -8,8 +8,11 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { Header } from "@/components/Header";
 import { Slideshow } from "@/components/Slideshow";
-import type { CardData, CardFormData } from "@/components/ui/card";
-import type { CardCategory } from "@/lib/db";
+import type {
+	CardCategory,
+	CardData,
+	CardFormData,
+} from "@/components/ui/card";
 import { client } from "@/lib/orpc";
 
 interface CardsLayoutProps {
@@ -83,6 +86,7 @@ export function CardsLayout({
 						onClose={handleCloseForm}
 						onSubmit={handleSubmitForm}
 						editingCard={editingCard}
+						category={category}
 					/>
 				)}
 			</>
@@ -90,7 +94,7 @@ export function CardsLayout({
 	}
 
 	return (
-		<div className="min-h-screen bg-background">
+		<div className="min-h-screen">
 			<Header onAddCard={handleOpenForm} session={session} />
 			<Slideshow cards={cards} />
 			<CardGrid
@@ -107,6 +111,7 @@ export function CardsLayout({
 						onClose={handleCloseForm}
 						onSubmit={handleSubmitForm}
 						editingCard={editingCard}
+						category={category}
 					/>
 					<ConfirmDialog
 						isOpen={!!cardToDelete}

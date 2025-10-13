@@ -1,4 +1,6 @@
 const nextConfig = {
+	output: "standalone",
+	compress: true,
 	images: {
 		remotePatterns: [
 			{

@@ -11,46 +11,91 @@
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       systems = import inputs.systems;
-      imports = [
-        inputs.process-compose-flake.flakeModule
-      ];
+      imports = [ inputs.process-compose-flake.flakeModule ];
+
       perSystem =
+        { pkgs, config, ... }:
+        let
+          packageJson = builtins.fromJSON (builtins.readFile ./package.json);
+          pname = packageJson.name;
+          version = packageJson.version;
+
+          buildInputs = [ pkgs.nodejs_20 ];
+          nativeBuildInputs = buildInputs;
+
+          npmDepsHash = "sha256-bL+Jaz5ZGzOUkGz+xARGAfNWgWhJM3y5wpso7LlPFWs=";
+        in
         {
-          pkgs,
-          config,
-          ...
-        }:
-        {
-          process-compose."default" =
+          process-compose.development =
             { ... }:
             {
-              imports = [
-                inputs.services-flake.processComposeModules.default
-              ];
+              imports = [ inputs.services-flake.processComposeModules.default ];
 
               settings.processes = {
                 application.command = "npm install && npm run dev";
               };
 
-              services.postgres."gpm-cards-db" = {
+              services.postgres."${pname}-db" = {
                 enable = true;
-                port = 5433;
-                initialDatabases = [ { name = "gpm-cards"; } ];
-                initialScript.after = # sql
-                  ''
-                    CREATE ROLE postgres WITH SUPERUSER LOGIN PASSWORD 'postgres';
-                  '';
+                initialDatabases = [ { name = pname; } ];
+                initialScript.after = ''
+                  CREATE ROLE postgres WITH SUPERUSER LOGIN PASSWORD 'postgres';
+                '';
               };
             };
 
           devShells.default = pkgs.mkShell {
             inputsFrom = [
-              config.process-compose."default".services.outputs.devShell
+              config.process-compose."development".services.outputs.devShell
             ];
-            packages = [
-              pkgs.nodejs
-              pkgs.biome
-            ];
+            packages =
+              buildInputs
+              ++ (with pkgs; [
+                biome
+                prefetch-npm-deps
+              ]);
+          };
+
+          packages.default = pkgs.buildNpmPackage {
+            inherit
+              pname
+              version
+              buildInputs
+              nativeBuildInputs
+              npmDepsHash
+              ;
+
+            src = ./.;
+            npmBuildScript = "build";
+
+            installPhase = ''
+              mkdir -p $out/app
+              cp -r .next/standalone/. $out/app/
+            '';
+          };
+
+          packages.container = pkgs.dockerTools.buildLayeredImage {
+            name = "${pname}-image";
+            tag = "latest";
+
+            contents = pkgs.buildEnv {
+              name = "${pname}-env";
+              paths = buildInputs ++ [
+                config.packages.default
+              ];
+            };
+
+            config = {
+              Env = [ "NODE_ENV=production" ];
+              WorkingDir = "/app";
+              Cmd = [
+                "node"
+                "server.js"
+              ];
+              ExposedPorts = {
+                "3000/tcp" = { };
+              };
+            };
           };
         };
     };

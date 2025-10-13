@@ -26,7 +26,7 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent className="sm:max-w-md">
+			<DialogContent className="sm:max-w-md bg-white/90 backdrop-blur-lg border border-white/20">
 				<DialogHeader>
 					<DialogTitle>{title}</DialogTitle>
 					<DialogDescription>{description}</DialogDescription>

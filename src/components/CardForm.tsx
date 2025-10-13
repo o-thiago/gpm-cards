@@ -4,7 +4,7 @@ import type React from "react";
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import type { CardData, CardFormData } from "@/components/ui/card";
+import type { CardCategory, CardData, CardFormData } from "@/components/ui/card";
 import {
 	Dialog,
 	DialogContent,
@@ -22,6 +22,7 @@ interface CardFormProps {
 	onClose: () => void;
 	onSubmit: (formData: CardFormData) => void;
 	editingCard?: CardData | null;
+	category: CardCategory;
 }
 
 export function CardForm({
@@ -29,11 +30,13 @@ export function CardForm({
 	onClose,
 	onSubmit,
 	editingCard,
+	category,
 }: CardFormProps) {
 	const [formData, setFormData] = useState<CardFormData>({
 		title: "",
 		description: "",
 		image: "",
+		metadata: { link: "" },
 	});
 
 	const [imageError, setImageError] = useState(false);
@@ -44,9 +47,10 @@ export function CardForm({
 				title: editingCard.title,
 				description: editingCard.description,
 				image: editingCard.image,
+				metadata: editingCard.metadata ?? { link: "" },
 			});
 		} else {
-			setFormData({ title: "", description: "", image: "" });
+			setFormData({ title: "", description: "", image: "", metadata: { link: "" } });
 		}
 		setImageError(false);
 	}, [editingCard]);
@@ -56,19 +60,20 @@ export function CardForm({
 
 		const isTitleValid = formData.title.trim() !== "";
 		const isDescriptionValid = formData.description.trim() !== "";
+		const isLinkValid = category !== "LINK" || (formData.metadata?.link?.trim() ?? "") !== "";
 		const isImageValid = formData.image.trim() !== "";
 
 		if (!isImageValid) {
 			setImageError(true);
 		}
 
-		if (!isTitleValid || !isDescriptionValid || !isImageValid) return;
+		if (!isTitleValid || !isDescriptionValid || !isLinkValid || !isImageValid) return;
 
 		onSubmit(formData);
 	};
 
 	const handleClose = () => {
-		setFormData({ title: "", description: "", image: "" });
+		setFormData({ title: "", description: "", image: "", metadata: { link: "" } });
 		setImageError(false);
 		onClose();
 	};
@@ -82,7 +87,7 @@ export function CardForm({
 
 	return (
 		<Dialog open={isOpen} onOpenChange={handleClose}>
-			<DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+			<DialogContent className="max-h-[90vh] overflow-y-auto bg-white/90 backdrop-blur-lg border border-white/20">
 				<DialogHeader>
 					<DialogTitle>
 						{editingCard ? "Editar Card" : "Adicionar Novo Card"}
@@ -121,6 +126,26 @@ export function CardForm({
 							required
 						/>
 					</div>
+
+					{category === "LINK" && (
+						<div className="space-y-2">
+							<Label htmlFor="link">Link</Label>
+							<Input
+								id="link"
+								name="link"
+								value={formData.metadata?.link ?? ""}
+								onChange={(e) =>
+									setFormData({
+										...formData,
+										metadata: { ...formData.metadata, link: e.target.value },
+									})
+								}
+								placeholder="https://example.com"
+								required
+								type="url"
+							/>
+						</div>
+					)}
 
 					<ImageUpload
 						name="image"

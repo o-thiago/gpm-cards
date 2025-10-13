@@ -91,11 +91,15 @@ export {
 	CardContent,
 };
 
+export type CardCategory = "RULE" | "WARNING" | "LINK";
+
 export interface CardData {
 	id: string;
 	title: string;
 	description: string;
 	image: string; // base64
+	category: CardCategory;
+	metadata: { link?: string } | null;
 }
 
 export interface CardFormData {
@@ -103,4 +107,5 @@ export interface CardFormData {
 	description: string;
 	image: string; // base64
 	imageFile?: File; // arquivo de imagem opcional
+	metadata?: { link?: string };
 }

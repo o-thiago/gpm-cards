@@ -11,10 +11,10 @@ interface EmptyStateProps {
 
 export function EmptyState({ onAddCard, session }: EmptyStateProps) {
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 p-4">
+		<div className="p-4 min-h-screen">
 			<div className="container mx-auto">
 				<div className="text-center py-20">
-					<h1 className="text-4xl font-bold text-primary mb-4">
+					<h1 className="text-4xl font-bold text-foreground mb-4">
 						Bem-vindo ao GPMecatrônica Cards!
 					</h1>
 					<p className="text-muted-foreground mb-8">

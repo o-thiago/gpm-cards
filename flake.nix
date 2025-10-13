@@ -11,46 +11,36 @@
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       systems = import inputs.systems;
-      imports = [
-        inputs.process-compose-flake.flakeModule
-      ];
+      imports = [ inputs.process-compose-flake.flakeModule ];
+
       perSystem =
-        let
-        in
-        {
-          pkgs,
-          config,
-          ...
-        }:
+        { pkgs, config, ... }:
         let
           packageJson = builtins.fromJSON (builtins.readFile ./package.json);
           pname = packageJson.name;
           version = packageJson.version;
-          buildInputs = with pkgs; [
-            nodejs_20
-          ];
+
+          buildInputs = [ pkgs.nodejs_20 ];
           nativeBuildInputs = buildInputs;
-          npmDepsHash = "sha256-LmqXK2d7ePMAiQ/G5UbdZ82i8CgpXpyo1JIm56HSlOk=";
+
+          npmDepsHash = "sha256-bL+Jaz5ZGzOUkGz+xARGAfNWgWhJM3y5wpso7LlPFWs=";
         in
         {
           process-compose.development =
             { ... }:
             {
-              imports = [
-                inputs.services-flake.processComposeModules.default
-              ];
+              imports = [ inputs.services-flake.processComposeModules.default ];
 
               settings.processes = {
                 application.command = "npm install && npm run dev";
               };
 
-              services.postgres."gpm-cards-db" = {
+              services.postgres."${pname}-db" = {
                 enable = true;
-                initialDatabases = [ { name = "gpm-cards"; } ];
-                initialScript.after = # sql
-                  ''
-                    CREATE ROLE postgres WITH SUPERUSER LOGIN PASSWORD 'postgres';
-                  '';
+                initialDatabases = [ { name = pname; } ];
+                initialScript.after = ''
+                  CREATE ROLE postgres WITH SUPERUSER LOGIN PASSWORD 'postgres';
+                '';
               };
             };
 
@@ -71,24 +61,56 @@
               pname
               version
               buildInputs
-              npmDepsHash
               nativeBuildInputs
+              npmDepsHash
               ;
 
             src = ./.;
+            npmBuildScript = "build";
 
-            postInstall = ''
-              mkdir -p $out/bin
-              exe="$out/bin/${pname}"
-              lib="$out/lib/node_modules/${pname}"
-              cp -r ./.next $lib
-              touch $exe
-              chmod +x $exe
-              echo "#!/usr/bin/env bash
-                cd $lib
-                ${pkgs.nodePackages_latest.nodejs}/bin/npm run start
-              " > $exe
+            installPhase = ''
+              mkdir -p $out/app
+
+              cp -r .next/standalone $out/app/
+              cp -r .next/static public $out/app/
+
+              cp package.json $out/app/
             '';
+          };
+
+          packages.container = pkgs.dockerTools.buildImage {
+            name = "nextjs-app";
+            tag = "latest";
+
+            copyToRoot = pkgs.buildEnv {
+              name = pname;
+              paths = [
+                config.packages.default
+                pkgs.nodejs
+              ];
+              pathsToLink = [ "/bin /app" ];
+            };
+
+            runAsRoot = # bash
+              ''
+                #!${pkgs.runtimeShell}
+                ${pkgs.dockerTools.shadowSetup}
+                groupadd --system --gid 1001 nodejs
+                useradd --system --uid 1001 --gid nodejs nextjs
+              '';
+
+            config = {
+              User = "nextjs";
+              Env = [ "NODE_ENV=production" ];
+              WorkingDir = "/app";
+              Cmd = [
+                "node"
+                "server.js"
+              ];
+              ExposedPorts = {
+                "3000/tcp" = { };
+              };
+            };
           };
         };
     };

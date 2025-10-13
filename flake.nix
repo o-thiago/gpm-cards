@@ -70,37 +70,22 @@
 
             installPhase = ''
               mkdir -p $out/app
-
-              cp -r .next/standalone $out/app/
-              cp -r .next/static public $out/app/
-
-              cp package.json $out/app/
+              cp -r .next/standalone/. $out/app/
             '';
           };
 
-          packages.container = pkgs.dockerTools.buildImage {
-            name = "nextjs-app";
+          packages.container = pkgs.dockerTools.buildLayeredImage {
+            name = "${pname}-image";
             tag = "latest";
 
-            copyToRoot = pkgs.buildEnv {
-              name = pname;
-              paths = [
+            contents = pkgs.buildEnv {
+              name = "${pname}-env";
+              paths = buildInputs ++ [
                 config.packages.default
-                pkgs.nodejs
               ];
-              pathsToLink = [ "/bin /app" ];
             };
 
-            runAsRoot = # bash
-              ''
-                #!${pkgs.runtimeShell}
-                ${pkgs.dockerTools.shadowSetup}
-                groupadd --system --gid 1001 nodejs
-                useradd --system --uid 1001 --gid nodejs nextjs
-              '';
-
             config = {
-              User = "nextjs";
               Env = [ "NODE_ENV=production" ];
               WorkingDir = "/app";
               Cmd = [

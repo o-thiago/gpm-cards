@@ -7,7 +7,12 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.css"]
+		"includes": [
+			"src/**/*.ts",
+			"src/**/*.tsx",
+			"src/**/*.css",
+			"next.config.ts"
+		]
 	},
 	"formatter": {
 		"enabled": true,

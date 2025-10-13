@@ -8,8 +8,13 @@ const categoryMap: Record<string, CardCategory> = {
 	links: "LINK",
 };
 
-export default function Page({ params }: { params: { category: string } }) {
-	const category = categoryMap[params.category.toLowerCase()];
+export default async function Page({
+	params,
+}: {
+	params: Promise<{ category: string }>;
+}) {
+	const { category: categoryName } = await params;
+	const category = categoryMap[categoryName.toLowerCase()];
 
 	if (!category) {
 		return notFound();
@@ -17,3 +22,4 @@ export default function Page({ params }: { params: { category: string } }) {
 
 	return <CategoryPage category={category} />;
 }
+

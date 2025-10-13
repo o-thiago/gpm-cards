@@ -3,7 +3,7 @@ name: Publish Container Image
 on:
   push:
     branches:
-      - main
+      - gh-ci
 
 jobs:
   publish:

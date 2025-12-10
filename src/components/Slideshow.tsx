@@ -1,48 +1,41 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import Autoplay from "embla-carousel-autoplay";
+import { Pause, Play } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import type { CardData } from "@/components/ui/card";
+import {
+	Carousel,
+	type CarouselApi,
+	CarouselContent,
+	CarouselItem,
+	CarouselNext,
+	CarouselPrevious,
+} from "@/components/ui/carousel";
 
 interface SlideshowProps {
 	cards: CardData[];
 }
 
 export function Slideshow({ cards }: SlideshowProps) {
-	const [currentSlide, setCurrentSlide] = useState(0);
+	const [api, setApi] = useState<CarouselApi>();
 	const [isPlaying, setIsPlaying] = useState(true);
 
-	// Slideshow automático
+	const plugin = useRef(Autoplay({ delay: 4000, stopOnInteraction: false }));
+
 	useEffect(() => {
-		if (!isPlaying || cards.length === 0) return;
+		if (!api) return;
 
-		const interval = setInterval(() => {
-			setCurrentSlide((prev) => (prev + 1) % cards.length);
-		}, 4000);
-
-		return () => clearInterval(interval);
-	}, [isPlaying, cards.length]);
-
-	// Ajustar slide atual se cards mudarem
-	useEffect(() => {
-		if (currentSlide >= cards.length && cards.length > 0) {
-			setCurrentSlide(cards.length - 1);
+		const autoplay = plugin.current;
+		if (isPlaying) {
+			autoplay.play();
+		} else {
+			autoplay.stop();
 		}
-	}, [cards.length, currentSlide]);
-
-	const goToSlide = (index: number) => {
-		setCurrentSlide(index);
-	};
-
-	const nextSlide = () => {
-		setCurrentSlide((prev) => (prev + 1) % cards.length);
-	};
-
-	const prevSlide = () => {
-		setCurrentSlide((prev) => (prev - 1 + cards.length) % cards.length);
-	};
+	}, [api, isPlaying]);
 
 	const togglePlayPause = () => {
 		setIsPlaying(!isPlaying);
@@ -52,107 +45,71 @@ export function Slideshow({ cards }: SlideshowProps) {
 
 	return (
 		<section
-			className="relative bg-card shadow-lg mb-8"
+			className="relative bg-card shadow-lg mb-8 rounded-xl overflow-hidden"
 			aria-label="Slideshow de cards"
 		>
-			<div className="relative h-96 overflow-hidden">
-				{cards.map((card, index) => {
-					const isBase64Image = card.image.startsWith("data:image/");
-
-					return (
-						<div
-							key={card.id}
-							className={`absolute inset-0 transition-transform duration-500 ease-in-out ${
-								index === currentSlide
-									? "translate-x-0"
-									: index < currentSlide
-										? "-translate-x-full"
-										: "translate-x-full"
-							}`}
-						>
-							<div className="flex h-full">
-								<div className="w-1/2 relative">
-									{isBase64Image ? (
+			<Carousel
+				setApi={setApi}
+				plugins={[plugin.current]}
+				className="w-full"
+				opts={{
+					loop: true,
+				}}
+			>
+				<CarouselContent className="-ml-0">
+					{cards.map((card, index) => {
+						const isBase64Image = card.image?.startsWith("data:image/");
+						return (
+							<CarouselItem key={card.id} className="pl-0">
+								<div className="flex h-96 w-full">
+									<div className="w-1/2 relative bg-muted">
 										<Image
 											src={card.image || "/placeholder.svg"}
 											alt={card.title}
 											fill
-											className="object-contain"
+											className="object-contain p-4"
 											priority={index === 0}
-											unoptimized // Necessário para imagens base64
+											unoptimized={isBase64Image}
 										/>
-									) : (
-										<Image
-											src={card.image || "/placeholder.svg"}
-											alt={card.title}
-											fill
-											className="object-contain"
-											priority={index === 0}
-										/>
-									)}
-								</div>
-								<div className="w-1/2 flex items-center justify-center p-8 bg-gradient-to-r from-primary to-green-600 text-white">
-									<div className="text-center max-w-md">
-										<h2 className="text-3xl font-bold mb-4">{card.title}</h2>
-										<p className="text-lg opacity-90">{card.description}</p>
+									</div>
+									<div className="w-1/2 flex items-center justify-center p-8 bg-gradient-to-r from-primary to-green-600 text-white">
+										<div className="text-center max-w-md">
+											<h2 className="text-3xl font-bold mb-4">{card.title}</h2>
+											<p className="text-lg opacity-90 line-clamp-6">
+												{card.description}
+											</p>
+										</div>
 									</div>
 								</div>
-							</div>
-						</div>
-					);
-				})}
-			</div>
-
-			{/* Controles do Slideshow */}
-			<div className="absolute inset-0 flex items-center justify-between p-4">
-				<Button
+							</CarouselItem>
+						);
+					})}
+				</CarouselContent>
+				<CarouselPrevious
+					className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-black border-none h-10 w-10 z-10"
 					variant="outline"
-					size="icon"
-					onClick={prevSlide}
-					className="bg-white/80 hover:bg-white"
-					aria-label="Slide anterior"
-				>
-					<ChevronLeft className="w-4 h-4" />
-				</Button>
-				<Button
+				/>
+				<CarouselNext
+					className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-black border-none h-10 w-10 z-10"
 					variant="outline"
-					size="icon"
-					onClick={nextSlide}
-					className="bg-white/80 hover:bg-white"
-					aria-label="Próximo slide"
-				>
-					<ChevronRight className="w-4 h-4" />
-				</Button>
-			</div>
+				/>
+			</Carousel>
 
 			{/* Indicadores e Controle de Play/Pause */}
-			<div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-4">
+			<div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-4 z-10">
 				<Button
 					variant="outline"
-					size="sm"
+					size="icon"
 					onClick={togglePlayPause}
-					className="bg-white/80 hover:bg-white"
+					className="h-8 w-8 bg-white/80 hover:bg-white border-none rounded-full"
 					aria-label={isPlaying ? "Pausar slideshow" : "Reproduzir slideshow"}
 				>
 					{isPlaying ? (
-						<Pause className="w-3 h-3" />
+						<Pause className="w-3 h-3 text-black" />
 					) : (
-						<Play className="w-3 h-3" />
+						<Play className="w-3 h-3 text-black" />
 					)}
 				</Button>
-				<div className="flex space-x-2">
-					{cards.map((card, index) => (
-						<button
-							type="submit"
-							key={card.id}
-							onClick={() => goToSlide(index)}
-							className={`w-3 h-3 rounded-full transition-colors ${
-								index === currentSlide ? "bg-white" : "bg-white/50"
-							}`}
-							aria-label={`Ir para slide ${index + 1}`}
-						/>
-					))}
-				</div>
 			</div>
 		</section>
 	);

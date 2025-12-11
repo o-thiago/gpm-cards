@@ -1,11 +1,9 @@
 "use client";
 
-import Autoplay from "embla-carousel-autoplay";
-import { Pause, Play } from "lucide-react";
+import Autoplay, { type AutoplayType } from "embla-carousel-autoplay";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import type { CardData } from "@/components/ui/card";
 import {
 	Carousel,
@@ -21,25 +19,13 @@ interface SlideshowProps {
 }
 
 export function Slideshow({ cards }: SlideshowProps) {
-	const [api, setApi] = useState<CarouselApi>();
-	const [isPlaying, setIsPlaying] = useState(true);
-
-	const plugin = useRef(Autoplay({ delay: 4000, stopOnInteraction: false }));
+	const [_, setApi] = useState<CarouselApi>();
+	const [plugin, setPlugin] = useState<AutoplayType | null>(null);
 
 	useEffect(() => {
-		if (!api) return;
-
-		const autoplay = plugin.current;
-		if (isPlaying) {
-			autoplay.play();
-		} else {
-			autoplay.stop();
-		}
-	}, [api, isPlaying]);
-
-	const togglePlayPause = () => {
-		setIsPlaying(!isPlaying);
-	};
+		const autoplay = Autoplay({ delay: 4000, stopOnInteraction: false });
+		setPlugin(autoplay);
+	}, []);
 
 	if (cards.length === 0) return null;
 
@@ -50,13 +36,13 @@ export function Slideshow({ cards }: SlideshowProps) {
 		>
 			<Carousel
 				setApi={setApi}
-				plugins={[plugin.current]}
+				plugins={plugin ? [plugin] : []}
 				className="w-full"
 				opts={{
 					loop: true,
 				}}
 			>
-				<CarouselContent className="-ml-0">
+				<CarouselContent className="ml-0">
 					{cards.map((card, index) => {
 						const isBase64Image = card.image?.startsWith("data:image/");
 						return (
@@ -72,7 +58,7 @@ export function Slideshow({ cards }: SlideshowProps) {
 											unoptimized={isBase64Image}
 										/>
 									</div>
-									<div className="w-1/2 flex items-center justify-center p-8 bg-gradient-to-r from-primary to-green-600 text-white">
+									<div className="w-1/2 flex items-center justify-center p-8 bg-linear-to-r from-primary to-green-600 text-white">
 										<div className="text-center max-w-md">
 											<h2 className="text-3xl font-bold mb-4">{card.title}</h2>
 											<p className="text-lg opacity-90 line-clamp-6">
@@ -94,23 +80,6 @@ export function Slideshow({ cards }: SlideshowProps) {
 					variant="outline"
 				/>
 			</Carousel>
-
-			{/* Indicadores e Controle de Play/Pause */}
-			<div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-4 z-10">
-				<Button
-					variant="outline"
-					size="icon"
-					onClick={togglePlayPause}
-					className="h-8 w-8 bg-white/80 hover:bg-white border-none rounded-full"
-					aria-label={isPlaying ? "Pausar slideshow" : "Reproduzir slideshow"}
-				>
-					{isPlaying ? (
-						<Pause className="w-3 h-3 text-black" />
-					) : (
-						<Play className="w-3 h-3 text-black" />
-					)}
-				</Button>
-			</div>
 		</section>
 	);
 }
